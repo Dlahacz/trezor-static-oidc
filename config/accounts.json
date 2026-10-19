@@ -1,1 +1,19 @@
-[]
+[
+  {
+    "sub": "dlaha",
+    "kid": "YDTJZX9NtD6E",
+    "jwk": {
+      "kty": "EC",
+      "crv": "P-256",
+      "x": "QvvxOwMOLSCVz588D-f7nGMRHQj6rSA6LKpArKPp3s4",
+      "y": "YApF0iYvj_h_jW6jTk6M0wM00-LzhbUQ6XBzxUrLBO0"
+    },
+    "identity": {
+      "proto": "ssh",
+      "host": "dlahacz.github.io",
+      "path": "/trezor-static-oidc",
+      "user": "dlaha",
+      "index": 0
+    }
+  }
+]
