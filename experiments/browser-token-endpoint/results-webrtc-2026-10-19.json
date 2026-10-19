@@ -1,0 +1,1004 @@
+{
+  "checks": [
+    {
+      "name": "plain ws:// to a relay is blocked from the HTTPS page (why WebSocket would need a relay certificate)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "relay with a different certificate than the pinned fingerprint is refused",
+      "ok": true,
+      "detail": "Error: WebRTC connection to relay failed"
+    },
+    {
+      "name": "tab connected to relay over webrtc from an HTTPS page, no signaling server",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "curl: token exchange through relay, ID token verifies",
+      "ok": true,
+      "detail": "{\"access_token\": \"CDfNug5rs-AeNEVtyd4nBtjucLJIe0r1tvFhWY1yvDc\", \"token_type\": \"Bearer\", \"expires_in\": 60, \"scope\": \"openid\", \"id_token\": \"eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6InFVQkU2ZVVXX09LQiJ9.eyJpc3MiOiJodHRwczovL2xvY2FsaG9zdDo4NDQ0L3RyZXpvci1vaWRjLXRlc3QiLCJzdWIiOiJhbGljZSIsImF1ZCI6ImdyY"
+    },
+    {
+      "name": "replayed code is rejected",
+      "ok": true,
+      "detail": "{\"error\": \"invalid_grant\", \"error_description\": \"Code was already used.\", \"_status\": 400, \"_tls_ms\": 7, \"_wall_ms\": 23}"
+    },
+    {
+      "name": "wrong PKCE verifier is rejected",
+      "ok": true,
+      "detail": "{\"error\": \"invalid_grant\", \"error_description\": \"code_verifier does not match.\", \"_status\": 400, \"_tls_ms\": 13, \"_wall_ms\": 32}"
+    },
+    {
+      "name": "code issued to another client is rejected",
+      "ok": true,
+      "detail": "{\"error\": \"invalid_client\", \"error_description\": \"Code was issued to another client.\", \"_status\": 401, \"_tls_ms\": 6, \"_wall_ms\": 18}"
+    },
+    {
+      "name": "python: token exchange through relay, ID token verifies",
+      "ok": true,
+      "detail": "{\"access_token\": \"jmyh6x7LKbOHD9VXaiqsr4Sz-E2z9_MWiOxvApqVRHI\", \"token_type\": \"Bearer\", \"expires_in\": 60, \"scope\": \"openid\", \"id_token\": \"eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6InFVQkU2ZVVXX09LQiJ9.eyJpc3MiOiJodHRwczovL2xvY2FsaG9zdDo4NDQ0L3RyZXpvci1vaWRjLXRlc3QiLCJzdWIiOiJhbGljZSIsImF1ZCI6ImdyY"
+    },
+    {
+      "name": "node: token exchange through relay, ID token verifies",
+      "ok": true,
+      "detail": "{\"access_token\": \"N3v3FNrB-_kovycLmY1sjh8R724czaTX-pZ-qVJXBII\", \"token_type\": \"Bearer\", \"expires_in\": 60, \"scope\": \"openid\", \"id_token\": \"eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6InFVQkU2ZVVXX09LQiJ9.eyJpc3MiOiJodHRwczovL2xvY2FsaG9zdDo4NDQ0L3RyZXpvci1vaWRjLXRlc3QiLCJzdWIiOiJhbGljZSIsImF1ZCI6ImdyY"
+    },
+    {
+      "name": "go: token exchange through relay, ID token verifies",
+      "ok": true,
+      "detail": "{\"_ms\": 9, \"_status\": 200, \"access_token\": \"cZIfCIOj8Z5-VoqxvtIVoOH1c3M7r_tWwi7G3HmnmKY\", \"expires_in\": 60, \"id_token\": \"eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6InFVQkU2ZVVXX09LQiJ9.eyJpc3MiOiJodHRwczovL2xvY2FsaG9zdDo4NDQ0L3RyZXpvci1vaWRjLXRlc3QiLCJzdWIiOiJhbGljZSIsImF1ZCI6ImdyYWZhbmEiLCJpYXQiOj"
+    },
+    {
+      "name": "Trezor-signed CSR verifies (what Let's Encrypt would receive)",
+      "ok": true,
+      "detail": "{\"signature_valid\": true, \"subject\": \"CN=token.test\", \"san\": [\"token.test\"], \"public_key\": \"MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEyBY3toTsH0sRcPmCL3Xn5O9dpJjq4nvMD3pyentfP78kga8VN+d9rMTATEuWLcpLOoxlulYL31gScf0wML5KKg==\"}"
+    },
+    {
+      "name": "tab connected to relay over webrtc from an HTTPS page, no signaling server",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "curl: token exchange through relay, ID token verifies",
+      "ok": true,
+      "detail": "{\"access_token\": \"EXa4jRMkhdbfZgFnmeHA1KDDGcO5sKwI5VRV7dgZsbA\", \"token_type\": \"Bearer\", \"expires_in\": 60, \"scope\": \"openid\", \"id_token\": \"eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6InFVQkU2ZVVXX09LQiJ9.eyJpc3MiOiJodHRwczovL2xvY2FsaG9zdDo4NDQ0L3RyZXpvci1vaWRjLXRlc3QiLCJzdWIiOiJhbGljZSIsImF1ZCI6ImdyY"
+    },
+    {
+      "name": "replayed code is rejected",
+      "ok": true,
+      "detail": "{\"error\": \"invalid_grant\", \"error_description\": \"Code was already used.\", \"_status\": 400, \"_tls_ms\": 433, \"_wall_ms\": 449}"
+    },
+    {
+      "name": "wrong PKCE verifier is rejected",
+      "ok": true,
+      "detail": "{\"error\": \"invalid_grant\", \"error_description\": \"code_verifier does not match.\", \"_status\": 400, \"_tls_ms\": 434, \"_wall_ms\": 452}"
+    },
+    {
+      "name": "code issued to another client is rejected",
+      "ok": true,
+      "detail": "{\"error\": \"invalid_client\", \"error_description\": \"Code was issued to another client.\", \"_status\": 401, \"_tls_ms\": 431, \"_wall_ms\": 443}"
+    },
+    {
+      "name": "python: token exchange through relay, ID token verifies",
+      "ok": true,
+      "detail": "{\"access_token\": \"fElrI9ArDefbrBVwHw4kH7OCRAabiNXji96F9F9YV44\", \"token_type\": \"Bearer\", \"expires_in\": 60, \"scope\": \"openid\", \"id_token\": \"eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6InFVQkU2ZVVXX09LQiJ9.eyJpc3MiOiJodHRwczovL2xvY2FsaG9zdDo4NDQ0L3RyZXpvci1vaWRjLXRlc3QiLCJzdWIiOiJhbGljZSIsImF1ZCI6ImdyY"
+    },
+    {
+      "name": "node: token exchange through relay, ID token verifies",
+      "ok": true,
+      "detail": "{\"access_token\": \"kMNNzrIpB1GU5OUTNNHbO1xZCRa0eilGo8fmnfFbHx4\", \"token_type\": \"Bearer\", \"expires_in\": 60, \"scope\": \"openid\", \"id_token\": \"eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6InFVQkU2ZVVXX09LQiJ9.eyJpc3MiOiJodHRwczovL2xvY2FsaG9zdDo4NDQ0L3RyZXpvci1vaWRjLXRlc3QiLCJzdWIiOiJhbGljZSIsImF1ZCI6ImdyY"
+    },
+    {
+      "name": "go: token exchange through relay, ID token verifies",
+      "ok": true,
+      "detail": "{\"_ms\": 428, \"_status\": 200, \"access_token\": \"T6W5RLa1IeeChhbTYFBPZqgA_fZaudt5QswYaR2e7uE\", \"expires_in\": 60, \"id_token\": \"eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6InFVQkU2ZVVXX09LQiJ9.eyJpc3MiOiJodHRwczovL2xvY2FsaG9zdDo4NDQ0L3RyZXpvci1vaWRjLXRlc3QiLCJzdWIiOiJhbGljZSIsImF1ZCI6ImdyYWZhbmEiLCJpYXQi"
+    },
+    {
+      "name": "Go client waits through an 8 s button press during the handshake",
+      "ok": true,
+      "detail": "{\"_ms\": 8036, \"_status\": 200, \"access_token\": \"ZCBnOY8jJukMWRCcrF_RxF_GvnEX9VOXQdj_-7adhfM\", \"expires_in\": 60, \"id_token\": \"eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6InFVQkU2ZVVXX09LQiJ9.eyJpc3MiOiJ"
+    },
+    {
+      "name": "relay saw 72596 bytes and none of the codes, verifiers, tokens or HTTP text",
+      "ok": true,
+      "detail": "[]"
+    },
+    {
+      "name": "relay could read the SNI host name (expected: used for routing)",
+      "ok": true,
+      "detail": ""
+    }
+  ],
+  "timings": [
+    {
+      "mode": "webcrypto",
+      "relay_link": "webrtc",
+      "connect_ms": 64
+    },
+    {
+      "mode": "webcrypto",
+      "client": "curl",
+      "wall_ms": 22,
+      "tls_ms": 10
+    },
+    {
+      "mode": "webcrypto",
+      "client": "python",
+      "wall_ms": 75,
+      "tls_ms": null
+    },
+    {
+      "mode": "webcrypto",
+      "client": "node",
+      "wall_ms": 117,
+      "tls_ms": null
+    },
+    {
+      "mode": "webcrypto",
+      "client": "go",
+      "wall_ms": 15,
+      "tls_ms": null
+    },
+    {
+      "mode": "trezor",
+      "relay_link": "webrtc",
+      "connect_ms": 69
+    },
+    {
+      "mode": "trezor",
+      "client": "curl",
+      "wall_ms": 443,
+      "tls_ms": 430
+    },
+    {
+      "mode": "trezor",
+      "client": "python",
+      "wall_ms": 494,
+      "tls_ms": null
+    },
+    {
+      "mode": "trezor",
+      "client": "node",
+      "wall_ms": 510,
+      "tls_ms": null
+    },
+    {
+      "mode": "trezor",
+      "client": "go",
+      "wall_ms": 437,
+      "tls_ms": null
+    },
+    {
+      "mode": "trezor, 8 s press",
+      "client": "go",
+      "wall_ms": 8044
+    },
+    {
+      "handshake_ms": 8,
+      "group": "x25519",
+      "sign_ms": 0,
+      "alpn": "http/1.1"
+    },
+    {
+      "handshake_ms": 6,
+      "group": "x25519",
+      "sign_ms": 0,
+      "alpn": "http/1.1"
+    },
+    {
+      "handshake_ms": 10,
+      "group": "x25519",
+      "sign_ms": 0,
+      "alpn": "http/1.1"
+    },
+    {
+      "handshake_ms": 5,
+      "group": "x25519",
+      "sign_ms": 1,
+      "alpn": "http/1.1"
+    },
+    {
+      "handshake_ms": 4,
+      "group": "x25519",
+      "sign_ms": 0,
+      "alpn": null
+    },
+    {
+      "handshake_ms": 10,
+      "group": "x25519",
+      "sign_ms": 0,
+      "alpn": null
+    },
+    {
+      "handshake_ms": 3,
+      "group": "x25519",
+      "sign_ms": 0,
+      "alpn": null
+    },
+    {
+      "handshake_ms": 428,
+      "group": "x25519",
+      "sign_ms": 423,
+      "alpn": "http/1.1"
+    },
+    {
+      "handshake_ms": 432,
+      "group": "x25519",
+      "sign_ms": 429,
+      "alpn": "http/1.1"
+    },
+    {
+      "handshake_ms": 434,
+      "group": "x25519",
+      "sign_ms": 424,
+      "alpn": "http/1.1"
+    },
+    {
+      "handshake_ms": 427,
+      "group": "x25519",
+      "sign_ms": 421,
+      "alpn": "http/1.1"
+    },
+    {
+      "handshake_ms": 432,
+      "group": "x25519",
+      "sign_ms": 427,
+      "alpn": null
+    },
+    {
+      "handshake_ms": 430,
+      "group": "x25519",
+      "sign_ms": 421,
+      "alpn": null
+    },
+    {
+      "handshake_ms": 424,
+      "group": "x25519",
+      "sign_ms": 420,
+      "alpn": null
+    },
+    {
+      "handshake_ms": 8033,
+      "group": "x25519",
+      "sign_ms": 8027,
+      "alpn": null
+    }
+  ],
+  "events": [
+    {
+      "t": 157,
+      "name": "device_confirm"
+    },
+    {
+      "t": 832,
+      "name": "relay_connected",
+      "link": "webrtc",
+      "ms": 64
+    },
+    {
+      "t": 861,
+      "name": "device_confirm"
+    },
+    {
+      "t": 1269,
+      "name": "device_sign",
+      "purpose": "id_token",
+      "ms": 433
+    },
+    {
+      "t": 1282,
+      "name": "open",
+      "conn": 1,
+      "remote": "127.0.0.1:33516",
+      "sni": "token.test"
+    },
+    {
+      "t": 1290,
+      "name": "handshake",
+      "conn": 1,
+      "ms": 8,
+      "link": "webrtc",
+      "sni": "token.test",
+      "alpnOffered": [
+        "h2",
+        "http/1.1"
+      ],
+      "alpn": "http/1.1",
+      "groupsOffered": [
+        "0x1d"
+      ],
+      "group": "x25519",
+      "signMs": 0
+    },
+    {
+      "t": 1290,
+      "name": "request",
+      "conn": 1,
+      "method": "POST",
+      "path": "/token",
+      "status": 200,
+      "error": null
+    },
+    {
+      "t": 1313,
+      "name": "open",
+      "conn": 2,
+      "remote": "127.0.0.1:33526",
+      "sni": "token.test"
+    },
+    {
+      "t": 1319,
+      "name": "handshake",
+      "conn": 2,
+      "ms": 6,
+      "link": "webrtc",
+      "sni": "token.test",
+      "alpnOffered": [
+        "h2",
+        "http/1.1"
+      ],
+      "alpn": "http/1.1",
+      "groupsOffered": [
+        "0x1d"
+      ],
+      "group": "x25519",
+      "signMs": 0
+    },
+    {
+      "t": 1319,
+      "name": "request",
+      "conn": 2,
+      "method": "POST",
+      "path": "/token",
+      "status": 400,
+      "error": "invalid_grant"
+    },
+    {
+      "t": 1346,
+      "name": "device_confirm"
+    },
+    {
+      "t": 1754,
+      "name": "device_sign",
+      "purpose": "id_token",
+      "ms": 426
+    },
+    {
+      "t": 1771,
+      "name": "open",
+      "conn": 3,
+      "remote": "127.0.0.1:33536",
+      "sni": "token.test"
+    },
+    {
+      "t": 1780,
+      "name": "handshake",
+      "conn": 3,
+      "ms": 10,
+      "link": "webrtc",
+      "sni": "token.test",
+      "alpnOffered": [
+        "h2",
+        "http/1.1"
+      ],
+      "alpn": "http/1.1",
+      "groupsOffered": [
+        "0x1d"
+      ],
+      "group": "x25519",
+      "signMs": 0
+    },
+    {
+      "t": 1783,
+      "name": "request",
+      "conn": 3,
+      "method": "POST",
+      "path": "/token",
+      "status": 400,
+      "error": "invalid_grant"
+    },
+    {
+      "t": 1821,
+      "name": "device_confirm"
+    },
+    {
+      "t": 2230,
+      "name": "device_sign",
+      "purpose": "id_token",
+      "ms": 428
+    },
+    {
+      "t": 2243,
+      "name": "open",
+      "conn": 4,
+      "remote": "127.0.0.1:33544",
+      "sni": "token.test"
+    },
+    {
+      "t": 2247,
+      "name": "handshake",
+      "conn": 4,
+      "ms": 5,
+      "link": "webrtc",
+      "sni": "token.test",
+      "alpnOffered": [
+        "h2",
+        "http/1.1"
+      ],
+      "alpn": "http/1.1",
+      "groupsOffered": [
+        "0x1d"
+      ],
+      "group": "x25519",
+      "signMs": 1
+    },
+    {
+      "t": 2247,
+      "name": "request",
+      "conn": 4,
+      "method": "POST",
+      "path": "/token",
+      "status": 401,
+      "error": "invalid_client"
+    },
+    {
+      "t": 2281,
+      "name": "device_confirm"
+    },
+    {
+      "t": 2688,
+      "name": "device_sign",
+      "purpose": "id_token",
+      "ms": 432
+    },
+    {
+      "t": 2751,
+      "name": "open",
+      "conn": 5,
+      "remote": "127.0.0.1:33548",
+      "sni": "token.test"
+    },
+    {
+      "t": 2755,
+      "name": "handshake",
+      "conn": 5,
+      "ms": 4,
+      "link": "webrtc",
+      "sni": "token.test",
+      "alpn": null,
+      "groupsOffered": [
+        "0x1d"
+      ],
+      "group": "x25519",
+      "signMs": 0
+    },
+    {
+      "t": 2755,
+      "name": "request",
+      "conn": 5,
+      "method": "POST",
+      "path": "/token",
+      "status": 200,
+      "error": null
+    },
+    {
+      "t": 2801,
+      "name": "device_confirm"
+    },
+    {
+      "t": 3208,
+      "name": "device_sign",
+      "purpose": "id_token",
+      "ms": 424
+    },
+    {
+      "t": 3302,
+      "name": "open",
+      "conn": 6,
+      "remote": "127.0.0.1:33554",
+      "sni": "token.test"
+    },
+    {
+      "t": 3312,
+      "name": "handshake",
+      "conn": 6,
+      "ms": 10,
+      "link": "webrtc",
+      "sni": "token.test",
+      "alpn": null,
+      "groupsOffered": [
+        "0x11ec",
+        "0x1d"
+      ],
+      "group": "x25519",
+      "signMs": 0
+    },
+    {
+      "t": 3312,
+      "name": "request",
+      "conn": 6,
+      "method": "POST",
+      "path": "/token",
+      "status": 200,
+      "error": null
+    },
+    {
+      "t": 3369,
+      "name": "device_confirm"
+    },
+    {
+      "t": 3775,
+      "name": "device_sign",
+      "purpose": "id_token",
+      "ms": 426
+    },
+    {
+      "t": 3784,
+      "name": "open",
+      "conn": 7,
+      "remote": "127.0.0.1:33564",
+      "sni": "token.test"
+    },
+    {
+      "t": 3787,
+      "name": "handshake",
+      "conn": 7,
+      "ms": 3,
+      "link": "webrtc",
+      "sni": "token.test",
+      "alpn": null,
+      "groupsOffered": [
+        "0x1d"
+      ],
+      "group": "x25519",
+      "signMs": 0
+    },
+    {
+      "t": 3791,
+      "name": "request",
+      "conn": 7,
+      "method": "POST",
+      "path": "/token",
+      "status": 200,
+      "error": null
+    },
+    {
+      "t": 3817,
+      "name": "device_confirm"
+    },
+    {
+      "t": 4238,
+      "name": "device_confirm"
+    },
+    {
+      "t": 4644,
+      "name": "device_sign",
+      "purpose": "tls",
+      "bytes": 162,
+      "ms": 420
+    },
+    {
+      "t": 4894,
+      "name": "relay_connected",
+      "link": "webrtc",
+      "ms": 69
+    },
+    {
+      "t": 4920,
+      "name": "device_confirm"
+    },
+    {
+      "t": 5325,
+      "name": "device_sign",
+      "purpose": "id_token",
+      "ms": 427
+    },
+    {
+      "t": 5338,
+      "name": "open",
+      "conn": 8,
+      "remote": "127.0.0.1:33578",
+      "sni": "token.test"
+    },
+    {
+      "t": 5357,
+      "name": "device_confirm"
+    },
+    {
+      "t": 5763,
+      "name": "device_sign",
+      "purpose": "tls",
+      "bytes": 130,
+      "ms": 423
+    },
+    {
+      "t": 5766,
+      "name": "handshake",
+      "conn": 8,
+      "ms": 428,
+      "link": "webrtc",
+      "sni": "token.test",
+      "alpnOffered": [
+        "h2",
+        "http/1.1"
+      ],
+      "alpn": "http/1.1",
+      "groupsOffered": [
+        "0x1d"
+      ],
+      "group": "x25519",
+      "signMs": 423
+    },
+    {
+      "t": 5766,
+      "name": "request",
+      "conn": 8,
+      "method": "POST",
+      "path": "/token",
+      "status": 200,
+      "error": null
+    },
+    {
+      "t": 5793,
+      "name": "open",
+      "conn": 9,
+      "remote": "127.0.0.1:33594",
+      "sni": "token.test"
+    },
+    {
+      "t": 5816,
+      "name": "device_confirm"
+    },
+    {
+      "t": 6222,
+      "name": "device_sign",
+      "purpose": "tls",
+      "bytes": 130,
+      "ms": 429
+    },
+    {
+      "t": 6224,
+      "name": "handshake",
+      "conn": 9,
+      "ms": 432,
+      "link": "webrtc",
+      "sni": "token.test",
+      "alpnOffered": [
+        "h2",
+        "http/1.1"
+      ],
+      "alpn": "http/1.1",
+      "groupsOffered": [
+        "0x1d"
+      ],
+      "group": "x25519",
+      "signMs": 429
+    },
+    {
+      "t": 6225,
+      "name": "request",
+      "conn": 9,
+      "method": "POST",
+      "path": "/token",
+      "status": 400,
+      "error": "invalid_grant"
+    },
+    {
+      "t": 6262,
+      "name": "device_confirm"
+    },
+    {
+      "t": 6670,
+      "name": "device_sign",
+      "purpose": "id_token",
+      "ms": 429
+    },
+    {
+      "t": 6686,
+      "name": "open",
+      "conn": 10,
+      "remote": "127.0.0.1:33606",
+      "sni": "token.test"
+    },
+    {
+      "t": 6707,
+      "name": "device_confirm"
+    },
+    {
+      "t": 7115,
+      "name": "device_sign",
+      "purpose": "tls",
+      "bytes": 130,
+      "ms": 424
+    },
+    {
+      "t": 7119,
+      "name": "handshake",
+      "conn": 10,
+      "ms": 434,
+      "link": "webrtc",
+      "sni": "token.test",
+      "alpnOffered": [
+        "h2",
+        "http/1.1"
+      ],
+      "alpn": "http/1.1",
+      "groupsOffered": [
+        "0x1d"
+      ],
+      "group": "x25519",
+      "signMs": 424
+    },
+    {
+      "t": 7119,
+      "name": "request",
+      "conn": 10,
+      "method": "POST",
+      "path": "/token",
+      "status": 400,
+      "error": "invalid_grant"
+    },
+    {
+      "t": 7159,
+      "name": "device_confirm"
+    },
+    {
+      "t": 7560,
+      "name": "device_sign",
+      "purpose": "id_token",
+      "ms": 426
+    },
+    {
+      "t": 7573,
+      "name": "open",
+      "conn": 11,
+      "remote": "127.0.0.1:33620",
+      "sni": "token.test"
+    },
+    {
+      "t": 7588,
+      "name": "device_confirm"
+    },
+    {
+      "t": 7994,
+      "name": "device_sign",
+      "purpose": "tls",
+      "bytes": 130,
+      "ms": 421
+    },
+    {
+      "t": 8000,
+      "name": "handshake",
+      "conn": 11,
+      "ms": 427,
+      "link": "webrtc",
+      "sni": "token.test",
+      "alpnOffered": [
+        "h2",
+        "http/1.1"
+      ],
+      "alpn": "http/1.1",
+      "groupsOffered": [
+        "0x1d"
+      ],
+      "group": "x25519",
+      "signMs": 421
+    },
+    {
+      "t": 8001,
+      "name": "request",
+      "conn": 11,
+      "method": "POST",
+      "path": "/token",
+      "status": 401,
+      "error": "invalid_client"
+    },
+    {
+      "t": 8031,
+      "name": "device_confirm"
+    },
+    {
+      "t": 8437,
+      "name": "device_sign",
+      "purpose": "id_token",
+      "ms": 424
+    },
+    {
+      "t": 8489,
+      "name": "open",
+      "conn": 12,
+      "remote": "127.0.0.1:33636",
+      "sni": "token.test"
+    },
+    {
+      "t": 8512,
+      "name": "device_confirm"
+    },
+    {
+      "t": 8918,
+      "name": "device_sign",
+      "purpose": "tls",
+      "bytes": 130,
+      "ms": 427
+    },
+    {
+      "t": 8921,
+      "name": "handshake",
+      "conn": 12,
+      "ms": 432,
+      "link": "webrtc",
+      "sni": "token.test",
+      "alpn": null,
+      "groupsOffered": [
+        "0x1d"
+      ],
+      "group": "x25519",
+      "signMs": 427
+    },
+    {
+      "t": 8921,
+      "name": "request",
+      "conn": 12,
+      "method": "POST",
+      "path": "/token",
+      "status": 200,
+      "error": null
+    },
+    {
+      "t": 8962,
+      "name": "device_confirm"
+    },
+    {
+      "t": 9367,
+      "name": "device_sign",
+      "purpose": "id_token",
+      "ms": 430
+    },
+    {
+      "t": 9438,
+      "name": "open",
+      "conn": 13,
+      "remote": "127.0.0.1:33638",
+      "sni": "token.test"
+    },
+    {
+      "t": 9455,
+      "name": "device_confirm"
+    },
+    {
+      "t": 9860,
+      "name": "device_sign",
+      "purpose": "tls",
+      "bytes": 130,
+      "ms": 421
+    },
+    {
+      "t": 9867,
+      "name": "handshake",
+      "conn": 13,
+      "ms": 430,
+      "link": "webrtc",
+      "sni": "token.test",
+      "alpn": null,
+      "groupsOffered": [
+        "0x11ec",
+        "0x1d"
+      ],
+      "group": "x25519",
+      "signMs": 421
+    },
+    {
+      "t": 9867,
+      "name": "request",
+      "conn": 13,
+      "method": "POST",
+      "path": "/token",
+      "status": 200,
+      "error": null
+    },
+    {
+      "t": 9919,
+      "name": "device_confirm"
+    },
+    {
+      "t": 10325,
+      "name": "device_sign",
+      "purpose": "id_token",
+      "ms": 423
+    },
+    {
+      "t": 10334,
+      "name": "open",
+      "conn": 14,
+      "remote": "127.0.0.1:58800",
+      "sni": "token.test"
+    },
+    {
+      "t": 10349,
+      "name": "device_confirm"
+    },
+    {
+      "t": 10755,
+      "name": "device_sign",
+      "purpose": "tls",
+      "bytes": 130,
+      "ms": 420
+    },
+    {
+      "t": 10758,
+      "name": "handshake",
+      "conn": 14,
+      "ms": 424,
+      "link": "webrtc",
+      "sni": "token.test",
+      "alpn": null,
+      "groupsOffered": [
+        "0x1d"
+      ],
+      "group": "x25519",
+      "signMs": 420
+    },
+    {
+      "t": 10759,
+      "name": "request",
+      "conn": 14,
+      "method": "POST",
+      "path": "/token",
+      "status": 200,
+      "error": null
+    },
+    {
+      "t": 10792,
+      "name": "device_confirm"
+    },
+    {
+      "t": 11199,
+      "name": "device_sign",
+      "purpose": "id_token",
+      "ms": 424
+    },
+    {
+      "t": 11209,
+      "name": "open",
+      "conn": 15,
+      "remote": "127.0.0.1:58808",
+      "sni": "token.test"
+    },
+    {
+      "t": 11228,
+      "name": "device_confirm"
+    },
+    {
+      "t": 19237,
+      "name": "device_sign",
+      "purpose": "tls",
+      "bytes": 130,
+      "ms": 8027
+    },
+    {
+      "t": 19242,
+      "name": "handshake",
+      "conn": 15,
+      "ms": 8033,
+      "link": "webrtc",
+      "sni": "token.test",
+      "alpn": null,
+      "groupsOffered": [
+        "0x1d"
+      ],
+      "group": "x25519",
+      "signMs": 8027
+    },
+    {
+      "t": 19242,
+      "name": "request",
+      "conn": 15,
+      "method": "POST",
+      "path": "/token",
+      "status": 200,
+      "error": null
+    }
+  ]
+}

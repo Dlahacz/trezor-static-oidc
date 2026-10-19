@@ -158,3 +158,13 @@ python3 test/browser_e2e.py http://localhost:8080/trezor-oidc shots/
 
 The emulator uses the public test seed. Never put accounts from a test config
 into `config/accounts.json`.
+
+## Experiments
+
+`experiments/browser-token-endpoint/` tests whether the sign-in tab itself can
+act as the OAuth token endpoint, so apps that only support the authorization
+code flow (like Grafana) can use this provider without a server that can read
+tokens. A blind relay forwards encrypted TLS to the tab over a signaling-free
+WebRTC data channel, and the tab terminates TLS with a key that can live on the
+Trezor. See its README for results and what is still untested. It is not part
+of the deployed site.
