@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; form-action *; base-uri 'none'; object-src 'none'">
+<meta name="referrer" content="no-referrer">
+<title>Trezor sign-in</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Silkscreen&display=swap">
+<link rel="stylesheet" href="css/idp.css">
+</head>
+<body>
+<main class="page">
+  <div class="issuer" id="issuer"></div>
+
+  <section id="loading"><p class="lede">Loading sign-in request…</p></section>
+
+  <section id="fatal" hidden>
+    <h1>This sign-in link can't be used</h1>
+    <p class="lede" id="fatal-msg"></p>
+    <p>Go back to the app you came from and start signing in again. If it keeps happening, the app's settings need to match this sign-in service.</p>
+  </section>
+
+  <section id="consent" hidden>
+    <h1 id="title"></h1>
+    <p class="lede" id="lede"></p>
+
+    <div class="sheet">
+      <ul class="facts" id="facts"></ul>
+
+      <div class="field" id="account-field" hidden>
+        <label for="account">Account</label>
+        <select id="account"></select>
+      </div>
+
+      <div class="device" id="device"></div>
+
+      <div class="row">
+        <button type="button" class="primary" id="go">Sign in with Trezor</button>
+        <button type="button" class="quiet" id="cancel">Cancel</button>
+      </div>
+
+      <ol class="steps" id="steps" aria-live="polite">
+        <li>Connect and unlock your Trezor</li>
+        <li>Confirm the sign-in on your Trezor</li>
+        <li id="step-return">Return to the app</li>
+      </ol>
+
+      <div class="notice" id="error" role="alert" hidden><p id="error-msg"></p></div>
+      <p class="hint"><a href="#" id="other-device">Use a different Trezor</a></p>
+    </div>
+  </section>
+</main>
+
+<script type="module" src="js/pages/authorize.js"></script>
+</body>
+</html>

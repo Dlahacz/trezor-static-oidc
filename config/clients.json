@@ -1,0 +1,6 @@
+{
+  "demo-rp": {
+    "name": "Demo app",
+    "redirect_uris": ["{{ISSUER}}/rp/"]
+  }
+}

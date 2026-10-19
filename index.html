@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; base-uri 'none'; object-src 'none'">
+<title>Trezor sign-in</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Silkscreen&display=swap">
+<link rel="stylesheet" href="css/idp.css">
+</head>
+<body>
+<main class="page">
+  <div class="issuer">OpenID Connect provider, served as static files</div>
+  <h1>Sign in to apps with your Trezor</h1>
+  <p class="lede">There is no server here. Apps send you to this site, your Trezor signs an ID token over USB, and the browser hands it back to the app. Apps check the signature against the public keys published on this site.</p>
+
+  <div class="device">
+    <div class="device__body" aria-hidden="true">
+      <div class="device__screen">
+        <b>Sign SSH</b>
+        <span>Sign in to Demo app</span>
+        <span class="dim">alice@%%ISSUER_HOST%%</span>
+      </div>
+    </div>
+    <p class="device__caption">Every sign-in is confirmed on the device. The signing key never leaves it and is derived from your wallet seed with SLIP-0013.</p>
+  </div>
+
+  <div class="sheet">
+    <ul class="facts">
+      <li><span class="k">Try it</span><span class="v"><a href="rp/">Demo app</a></span></li>
+      <li><span class="k">Register a Trezor</span><span class="v"><a href="setup.html">Setup</a></span></li>
+      <li><span class="k">Discovery document</span><span class="v"><a href=".well-known/openid-configuration">openid-configuration</a></span></li>
+      <li><span class="k">Public keys</span><span class="v"><a href="jwks.json">jwks.json</a></span></li>
+      <li><span class="k">Registered apps</span><span class="v"><a href="clients.json">clients.json</a></span></li>
+    </ul>
+    <p class="hint">Works in Chrome, Edge and Brave (WebUSB) with Trezor Model One (firmware 1.12.1 or newer), Model T, Safe 3 and Safe 5. Close Trezor Suite first; only one app can use the device at a time.</p>
+  </div>
+
+  <h2>What apps need to know</h2>
+  <p>This provider only supports the implicit flow: <code>response_type=id_token</code> with a <code>nonce</code>, returned in the URL fragment or by <code>form_post</code>. There is no token endpoint and no access token. Tokens are ES256 and short-lived; the subject is the username registered in setup.</p>
+</main>
+</body>
+</html>

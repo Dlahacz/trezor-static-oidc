@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https: http://localhost:* http://127.0.0.1:*; base-uri 'none'; object-src 'none'">
+<meta name="referrer" content="no-referrer">
+<title>Demo app</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Silkscreen&display=swap">
+<link rel="stylesheet" href="../css/idp.css">
+</head>
+<body>
+<main class="page page--wide">
+  <div class="issuer">Demo app, a relying party that runs entirely in the browser</div>
+
+  <section id="signed-out">
+    <h1>Demo app</h1>
+    <p class="lede">Sign in through the Trezor sign-in service. This page checks the returned ID token itself, using the service's published keys, the same way a server-side app would.</p>
+    <div class="sheet">
+      <div class="row">
+        <button type="button" class="primary" id="signin">Sign in with Trezor</button>
+      </div>
+      <details style="margin-top:18px">
+        <summary>Connection settings</summary>
+        <div class="field" style="margin-top:14px">
+          <label for="issuer">Sign-in service address</label>
+          <input type="url" id="issuer">
+        </div>
+        <div class="field">
+          <label for="client">App ID</label>
+          <input type="text" id="client" value="demo-rp">
+          <p class="hint">Must be listed in the service's clients.json with this page's address as a return address.</p>
+        </div>
+        <div class="field">
+          <label for="scope">Requested scope</label>
+          <input type="text" id="scope" value="openid profile">
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <section id="signed-in" hidden>
+    <h1 id="hello"></h1>
+    <p class="lede">The ID token passed every check below.</p>
+    <div class="sheet">
+      <ul class="facts" id="checks"></ul>
+      <h2>Claims</h2>
+      <ul class="facts" id="claims"></ul>
+      <h2>ID token</h2>
+      <pre id="raw"></pre>
+      <div class="row"><button type="button" class="quiet" id="signout">Sign out</button></div>
+    </div>
+  </section>
+
+  <div class="notice" id="error" role="alert" hidden><p id="error-msg"></p></div>
+</main>
+<script type="module" src="../js/pages/rp.js"></script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+{
+  "name": "trezor-oidc",
+  "private": true,
+  "type": "module",
+  "description": "Static OIDC provider that signs ID tokens with a Trezor via SLIP-0013 SignIdentity",
+  "scripts": {
+    "test": "node test/e2e.mjs",
+    "serve": "python3 -m http.server 8080"
+  }
+}

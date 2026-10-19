@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; base-uri 'none'; object-src 'none'">
+<title>Set up Trezor sign-in</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Silkscreen&display=swap">
+<link rel="stylesheet" href="css/idp.css">
+</head>
+<body>
+<main class="page page--wide">
+  <div class="issuer"><a href="./">Trezor sign-in</a></div>
+  <h1>Register a Trezor account</h1>
+  <p class="lede">Your Trezor derives a signing key for this site and username. You then add the account to the repository, and the deploy workflow publishes its public key so apps can check the ID tokens it signs.</p>
+
+  <form class="sheet" id="form">
+    <div class="field">
+      <label for="issuer">Sign-in service address</label>
+      <input type="url" id="issuer" required>
+      <p class="hint">Filled in from the deployed site. This address is part of the key, so moving the site to another address means registering again.</p>
+    </div>
+    <div class="field">
+      <label for="user">Username</label>
+      <input type="text" id="user" required pattern="[A-Za-z0-9._\-]{1,32}" value="alice" autocomplete="username">
+      <p class="hint">Becomes the token's subject. Letters, digits, dots, dashes and underscores.</p>
+    </div>
+    <div class="field">
+      <label for="name">Display name</label>
+      <input type="text" id="name" maxlength="40" placeholder="Optional">
+    </div>
+    <div class="field">
+      <label for="index">Key number</label>
+      <input type="number" id="index" min="0" max="4294967295" value="0">
+      <p class="hint">Change it to rotate to a new key for the same username.</p>
+    </div>
+
+    <div class="device" id="device"></div>
+
+    <div class="row">
+      <button type="submit" class="primary" id="go">Register with Trezor</button>
+    </div>
+    <div class="notice" id="error" role="alert" hidden><p id="error-msg"></p></div>
+  </form>
+
+  <section id="result" hidden>
+    <div class="notice notice--ok"><p id="ok-msg"></p></div>
+    <h2>Add the account to your repository</h2>
+    <p>Replace <code>config/accounts.json</code> with the content below and push to <code>main</code>. The deploy workflow checks the key and publishes it; sign-in works for this account once that run finishes.</p>
+    <p id="edit-link" hidden><a target="_blank" rel="noopener">Edit config/accounts.json on GitHub</a></p>
+    <div id="files"></div>
+    <p class="hint">Keeping accounts out of the repository? Put the same JSON in the repository variable <code>OIDC_ACCOUNTS</code> instead.</p>
+  </section>
+</main>
+<script type="module" src="js/pages/setup.js"></script>
+</body>
+</html>

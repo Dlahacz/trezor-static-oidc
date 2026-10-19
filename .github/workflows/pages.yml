@@ -1,0 +1,102 @@
+name: Deploy sign-in site to GitHub Pages
+
+# Builds the static OIDC provider from config/ and publishes it with GitHub Pages.
+#
+# Settings (Settings > Secrets and variables > Actions > Variables), all optional:
+#   OIDC_ISSUER     Public address of the site. Default: this repository's Pages URL
+#                   (custom domain included). Account keys are tied to its host name.
+#   OIDC_TOKEN_TTL  ID token lifetime in seconds (60-3600). Default: config/site.json or 300.
+#   OIDC_ACCOUNTS   JSON array of accounts, replacing config/accounts.json.
+#   OIDC_CLIENTS    JSON object of apps, replacing config/clients.json.
+#                   "{{ISSUER}}" in a return address is replaced with the issuer.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "config/**"
+      - "css/**"
+      - "js/**"
+      - "rp/**"
+      - "scripts/**"
+      - "*.html"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      issuer: ${{ steps.issuer.outputs.issuer }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - id: pages
+        uses: actions/configure-pages@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      - id: issuer
+        name: Choose issuer
+        env:
+          OVERRIDE: ${{ vars.OIDC_ISSUER }}
+          PAGES_URL: ${{ steps.pages.outputs.base_url }}
+        run: |
+          issuer="${OVERRIDE:-$PAGES_URL}"
+          echo "issuer=${issuer%/}" >> "$GITHUB_OUTPUT"
+          echo "Issuer: ${issuer%/}"
+
+      - name: Check scripts
+        run: for f in js/*.js js/pages/*.js scripts/*.mjs; do node --check "$f"; done
+
+      - name: Build site from config
+        env:
+          OIDC_ISSUER: ${{ steps.issuer.outputs.issuer }}
+          OIDC_TOKEN_TTL: ${{ vars.OIDC_TOKEN_TTL }}
+          OIDC_ACCOUNTS: ${{ vars.OIDC_ACCOUNTS }}
+          OIDC_CLIENTS: ${{ vars.OIDC_CLIENTS }}
+        run: node scripts/build-site.mjs --out _site
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
+          # .well-known/openid-configuration is a hidden folder
+          include-hidden-files: true
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5
+
+      - name: Check the published documents
+        env:
+          ISSUER: ${{ needs.build.outputs.issuer }}
+        run: |
+          set -eu
+          for i in $(seq 1 12); do
+            if curl -fsS "$ISSUER/.well-known/openid-configuration" -o disco.json; then break; fi
+            echo "Waiting for Pages to serve the new version..."; sleep 10
+          done
+          node -e '
+            const d = JSON.parse(require("fs").readFileSync("disco.json", "utf8"));
+            if (d.issuer !== process.env.ISSUER) { console.error(`Discovery issuer is ${d.issuer}, expected ${process.env.ISSUER}`); process.exit(1); }
+            console.log("Discovery OK:", d.issuer);
+          '
+          curl -fsS "$ISSUER/jwks.json" | node -e 'let s="";process.stdin.on("data",c=>s+=c).on("end",()=>console.log("JWKS keys:", JSON.parse(s).keys.length))'

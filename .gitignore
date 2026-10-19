@@ -1,0 +1,4 @@
+_site/
+shots/
+node_modules/
+__pycache__/
