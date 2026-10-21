@@ -81,6 +81,37 @@ export class BridgeTransport {
   }
 }
 
+// The "usb" package ends a read after 1 s unless told otherwise; browsers wait as
+// long as it takes. The device answers only once the person has confirmed (and a
+// Model One spends over a second checking a PIN), so give them time. Reads must
+// not time out in normal use: after an aborted read, the device's next reply
+// never arrived (macOS, Model One).
+const USB_READ_TIMEOUT_MS = 5 * 60 * 1000;
+
+class NodeUsbTransport extends WebUsbTransport {
+  // A session interrupted mid-exchange (Ctrl-C) can leave the device unwilling to
+  // take new messages until it is reconnected. (A USB reset would clear it, but
+  // makes a Model One drop off the bus on macOS.)
+  async write(pkt) {
+    try {
+      await super.write(pkt);
+    } catch (e) {
+      throw new Error(`The Trezor isn't accepting messages (${e.message}). Unplug it, plug it back in, and try again.`, { cause: e });
+    }
+  }
+
+  async read() {
+    let r;
+    try {
+      r = await this.device.transferIn(this.epIn, 64, USB_READ_TIMEOUT_MS);
+    } catch (e) {
+      throw new Error(`No answer from the Trezor within ${USB_READ_TIMEOUT_MS / 60000} minutes (${e.message}).`, { cause: e });
+    }
+    if (r.status !== "ok") throw new Error(`USB read ${r.status}`);
+    return new Uint8Array(r.data.buffer, r.data.byteOffset, r.data.byteLength);
+  }
+}
+
 export async function openUsb() {
   let usb;
   try {
@@ -94,7 +125,7 @@ export async function openUsb() {
     ?? all.find((d) => d.vendorId === 0x1209 && d.productId === 0x53c0);
   if (!device) throw new Error("No Trezor found over USB. Connect and unlock it, then try again.");
   try {
-    return await WebUsbTransport.open(device);
+    return await NodeUsbTransport.open(device);
   } catch (e) {
     if (/Another app/.test(e.message)) {
       throw new Error("Another app is using your Trezor. Close Trezor Suite, or use --transport bridge while it runs.", { cause: e });
