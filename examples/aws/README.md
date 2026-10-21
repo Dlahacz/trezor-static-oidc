@@ -1,16 +1,18 @@
 # AWS access with a Trezor
 
-Use the sign-in site as an OpenID Connect identity provider for AWS IAM. The
-command-line tool signs an ID token on your Trezor, AWS STS
-(`AssumeRoleWithWebIdentity`) exchanges it for temporary credentials of a role,
-and the AWS CLI uses them through `credential_process`.
+Use the sign-in site as an OpenID Connect identity provider for AWS IAM. Two
+tools, each with one job, joined by a pipe:
+
+- `trezor-oidc token` signs an ID token on your Trezor and prints it. It knows nothing about AWS.
+- `aws sts assume-role-with-web-identity` sends the token to AWS STS, which
+  checks it against the issuer's published keys and the role's trust policy,
+  and returns temporary credentials for the role.
 
 ```
-aws s3 ls ──▶ credential_process: trezor-oidc aws-credentials
-                 │  1. sign ID token (aud = client ID, sub = account)  ──USB/Bridge──▶ Trezor
-                 │  2. AssumeRoleWithWebIdentity(role, token)          ──▶ AWS STS
-                 ▼                                                         │ checks the token against
-              temporary credentials (cached until 15 min before expiry) ◀──┘ <issuer>/jwks.json
+trezor-oidc token ──▶ tr -d '\n' ──▶ aws sts assume-role-with-web-identity ──▶ --query reshape ──▶ credentials
+ │ signs on the Trezor   │ token line ->   │ STS verifies the token against          │ STS response ->
+ │ aud = app ID          │ exact value     │ <issuer>/jwks.json and the trust policy │ credential_process JSON
+ │ sub = account         │                 │ (no AWS credentials needed)             │
 ```
 
 Below, `ISSUER` is your site address (for example `https://owner.github.io/repo`)
@@ -86,43 +88,78 @@ Check it prints a token:
 trezor-oidc token --issuer "$ISSUER" --client aws
 ```
 
-## 4. Configure an AWS CLI profile
+## 4. Exchange the token by hand
+
+The whole flow is one pipeline. `AssumeRoleWithWebIdentity` needs no AWS
+credentials, hence `--no-sign-request`:
+
+```sh
+trezor-oidc token --issuer "$ISSUER" --client aws \
+  | tr -d '\n' \
+  | aws sts assume-role-with-web-identity \
+      --no-sign-request \
+      --role-arn arn:aws:iam::<account-id>:role/trezor-oidc-example \
+      --role-session-name "trezor-$USER" \
+      --web-identity-token file:///dev/stdin
+```
+
+The glue between the two tools:
+
+| Step | Why |
+|---|---|
+| `tr -d '\n'` | `trezor-oidc` prints the token as a line. `file:///dev/stdin` makes the AWS CLI read the parameter value from the pipe verbatim, and a trailing newline would become part of the token |
+| `--web-identity-token file:///dev/stdin` | The token is the request's `WebIdentityToken` |
+| `--role-arn`, `--role-session-name` | The rest of the STS request: which role, and a name that shows up in CloudTrail |
+
+STS answers with `Credentials` (`AccessKeyId`, `SecretAccessKey`,
+`SessionToken`, `Expiration`) plus the assumed role and the token's subject.
+
+## 5. Configure an AWS CLI profile
+
+[`trezor-aws-credentials.sh`](trezor-aws-credentials.sh) is the same pipeline
+with one more step: `--query` reshapes the STS response into the JSON the AWS
+CLI expects from a `credential_process`:
+
+```
+{ "Credentials": { "AccessKeyId", "SecretAccessKey", "SessionToken", "Expiration" }, ... }
+   ──▶ { "Version": 1, "AccessKeyId", "SecretAccessKey", "SessionToken", "Expiration" }
+```
 
 In `~/.aws/config`:
 
 ```ini
 [profile trezor]
-credential_process = trezor-oidc aws-credentials --issuer https://owner.github.io/repo --client aws --role-arn arn:aws:iam::<account-id>:role/trezor-oidc-example
+credential_process = /path/to/examples/aws/trezor-aws-credentials.sh arn:aws:iam::<account-id>:role/trezor-oidc-example --issuer https://owner.github.io/repo --client aws
 region = eu-central-1
 ```
 
-Add `--account <sub>` if the site has more than one account. Then:
+Arguments after the role ARN go to `trezor-oidc token` (add `--account <sub>`
+if the site has more than one account). Environment: `TREZOR_AWS_DURATION`
+(seconds, up to the role's `max_session_duration`, default 3600),
+`TREZOR_AWS_SESSION_NAME` (default `trezor-$USER`), `AWS_REGION` (STS region).
 
 ```sh
 aws --profile trezor sts get-caller-identity
 aws --profile trezor s3 ls s3://my-example-bucket/
 ```
 
-The first command asks you to confirm on the Trezor (and for your PIN or
-passphrase if needed, on the terminal). The credentials are cached in
-`~/.cache/trezor-oidc/` and reused until 15 minutes before they expire; set
-`--duration` (up to the role's `max_session_duration`) for longer sessions,
-or `--no-cache` to confirm every time.
-
-### Without credential_process
-
-For a one-off, call STS yourself. `AssumeRoleWithWebIdentity` needs no AWS credentials:
+Each command asks you to confirm on the Trezor (and for your PIN or passphrase
+if needed, on the terminal). The AWS CLI doesn't cache `credential_process`
+results between commands. To confirm once per shell session, load the
+credentials into the environment:
 
 ```sh
-aws sts assume-role-with-web-identity \
-  --role-arn arn:aws:iam::<account-id>:role/trezor-oidc-example \
-  --role-session-name "trezor-$USER" \
-  --web-identity-token "$(trezor-oidc token --issuer "$ISSUER" --client aws)"
+eval "$(aws configure export-credentials --profile trezor --format env)"
+aws s3 ls s3://my-example-bucket/   # no Trezor prompt until they expire
 ```
+
+The script passes `--no-sign-request` to its inner `aws` call for a second
+reason: without it, that call would load credentials from the same profile
+(when `AWS_PROFILE=trezor`) and run the script again.
 
 ## Troubleshooting
 
-`trezor-oidc` passes STS errors through:
+STS errors appear in the AWS CLI's output:
 
 | Error | Usually means |
 |---|---|

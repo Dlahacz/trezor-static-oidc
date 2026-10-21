@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 // Command-line ID tokens: sign on the Trezor without a browser and print to stdout.
+// That is all it does: handing the token to something else (e.g. AWS STS, see
+// examples/aws) is up to the caller.
 //
-//   trezor-oidc token           --issuer URL --client ID [--account SUB]
-//   trezor-oidc aws-credentials --issuer URL --client ID --role-arn ARN
+//   trezor-oidc token --issuer URL --client ID [--account SUB]
 //
 // Run with --help for all options.
 
@@ -12,15 +13,10 @@ import { randomToken, identityLabel } from "../js/oidc.js";
 import { signIdToken } from "../js/flows.js";
 import { openTransport, DEFAULT_BRIDGE_URL } from "./transports.mjs";
 import { say, promptHidden } from "./tty.mjs";
-import { assumeRoleWithWebIdentity, credentialCache } from "./aws.mjs";
 
 const HELP = `Usage:
   trezor-oidc token [options]
-      Sign an ID token on your Trezor and print it to stdout.
-  trezor-oidc aws-credentials --role-arn ARN [options]
-      Exchange the token with AWS STS (AssumeRoleWithWebIdentity) and print
-      credentials in the AWS CLI credential_process format. Cached until
-      15 minutes before they expire.
+      Sign an ID token on your Trezor and print it to stdout, followed by a newline.
 
 Options:
   --issuer URL             Sign-in site address            [env TREZOR_OIDC_ISSUER]
@@ -35,13 +31,6 @@ Options:
                            auto uses Trezor Bridge / Suite if it runs, else USB
   --bridge-url URL         Default ${DEFAULT_BRIDGE_URL}
 
-aws-credentials options:
-  --role-arn ARN           Role to assume                  [env TREZOR_OIDC_AWS_ROLE_ARN]
-  --session-name NAME      Role session name (default: trezor-<account>)
-  --duration SECONDS       Session length, up to the role's maximum (default 3600)
-  --region REGION          STS region (default: AWS_REGION, else the global endpoint)
-  --no-cache               Always sign a new token
-
 Prompts and device messages go to the terminal (/dev/tty), never to stdout.`;
 
 const { values: opt, positionals } = parseArgs({
@@ -55,11 +44,6 @@ const { values: opt, positionals } = parseArgs({
     "passphrase-on-device": { type: "boolean", default: false },
     transport: { type: "string", default: "auto" },
     "bridge-url": { type: "string", default: DEFAULT_BRIDGE_URL },
-    "role-arn": { type: "string", default: process.env.TREZOR_OIDC_AWS_ROLE_ARN },
-    "session-name": { type: "string" },
-    duration: { type: "string", default: "3600" },
-    region: { type: "string", default: process.env.AWS_REGION || process.env.AWS_DEFAULT_REGION },
-    "no-cache": { type: "boolean", default: false },
     help: { type: "boolean", short: "h", default: false },
   },
 });
@@ -149,28 +133,10 @@ async function issueToken() {
   try {
     await trezor.initialize();
     const { idToken } = await signIdToken(trezor, { config, account, req });
-    return { idToken, account };
+    return idToken;
   } finally {
     await transport.close();
   }
-}
-
-async function awsCredentials() {
-  const roleArn = opt["role-arn"];
-  if (!roleArn) throw new UsageError("--role-arn is required (or set TREZOR_OIDC_AWS_ROLE_ARN).");
-  const durationSeconds = Number(opt.duration);
-  if (!Number.isInteger(durationSeconds) || durationSeconds < 900 || durationSeconds > 43200) {
-    throw new UsageError("--duration must be a whole number of seconds between 900 and 43200.");
-  }
-  const cache = credentialCache([opt.issuer, opt.client, opt.account, roleArn, opt["session-name"], opt.region]);
-  const cached = !opt["no-cache"] && cache.read();
-  if (cached) return cached;
-
-  const { idToken, account } = await issueToken();
-  const sessionName = opt["session-name"] || `trezor-${account.sub}`.slice(0, 64);
-  const creds = await assumeRoleWithWebIdentity({ roleArn, sessionName, token: idToken, durationSeconds, region: opt.region });
-  if (!opt["no-cache"]) cache.write(creds);
-  return creds;
 }
 
 function explain(e) {
@@ -189,14 +155,8 @@ if (opt.help || !command) {
   process.exit(opt.help ? 0 : 2);
 }
 try {
-  if (command === "token") {
-    const { idToken } = await issueToken();
-    process.stdout.write(idToken + "\n");
-  } else if (command === "aws-credentials") {
-    process.stdout.write(JSON.stringify(await awsCredentials()) + "\n");
-  } else {
-    throw new UsageError(`Unknown command "${command}". Use token or aws-credentials.`);
-  }
+  if (command !== "token") throw new UsageError(`Unknown command "${command}". Use token.`);
+  process.stdout.write((await issueToken()) + "\n");
   process.exit(0);
 } catch (e) {
   process.stderr.write(`trezor-oidc: ${explain(e)}\n`);

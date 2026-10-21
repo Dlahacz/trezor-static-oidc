@@ -23,7 +23,7 @@ app ──(authorize link)──▶ authorize.html ──WebUSB──▶ Trezor 
 | `authorize.html` | Authorization endpoint: checks the request, shows consent, signs on the Trezor, returns the token |
 | `setup.html` | Registers an account: derives its key on the Trezor and gives you the updated `config/accounts.json` |
 | `rp/` | Demo app that signs in and verifies the token in the browser |
-| `cli/` | `trezor-oidc` command-line tool: signs tokens without a browser, optional AWS STS exchange |
+| `cli/` | `trezor-oidc` command-line tool: signs a token without a browser and prints it |
 | `examples/aws/` | AWS IAM federation: identity provider, role, example bucket, AWS CLI profile |
 | `js/` | Dependency-free Trezor protocol v1 client over WebUSB, OIDC helpers, page scripts |
 
@@ -136,9 +136,9 @@ trezor-oidc token --issuer https://owner.github.io/repo --client aws [--account 
   registered Trezor can sign tokens for any audience. Relying parties must check
   `aud` and `sub`.
 
-`trezor-oidc aws-credentials --role-arn ARN` also exchanges the token with AWS
-STS and prints credentials for an AWS CLI `credential_process`. See
-[examples/aws](examples/aws/README.md) for the identity provider, role and profile setup.
+The tool stops at the token. To use it with AWS, pipe it into
+`aws sts assume-role-with-web-identity`. [examples/aws](examples/aws/README.md)
+shows the identity provider, the role, and an AWS CLI profile built on that pipeline.
 
 ## Supported devices and browsers
 
