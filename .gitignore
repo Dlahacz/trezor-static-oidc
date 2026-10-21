@@ -2,3 +2,6 @@ _site/
 shots/
 node_modules/
 __pycache__/
+experiments/*/results/
+**/relay-webrtc/relay-webrtc
+**/relay-state/
