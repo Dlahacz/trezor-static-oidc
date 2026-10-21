@@ -45,7 +45,7 @@ export class WebUsbTransport {
         { cause: e },
       );
     }
-    return new WebUsbTransport(device, 0, epIn, epOut);
+    return new this(device, 0, epIn, epOut);
   }
 
   async write(pkt) {

@@ -101,6 +101,23 @@ async function pinFromTerminal(req) {
   }
 }
 
+/**
+ * Don't leave the device on a prompt nobody will answer (a Model One ignores its
+ * buttons until the host acknowledges the button request). Cancel, then read
+ * until the device's Failure, so no stale reply is left for the next session.
+ */
+async function cancelOnDevice(trezor) {
+  const deadline = Date.now() + 3000;
+  try {
+    await trezor.send("Cancel", {});
+    while (Date.now() < deadline) {
+      const timeout = new Promise((_, rej) => setTimeout(() => rej(new Error("timeout")), deadline - Date.now()));
+      const { name } = await Promise.race([trezor.receive(), timeout]);
+      if (name === "Failure") return;
+    }
+  } catch {}
+}
+
 async function issueToken() {
   if (!opt.issuer) throw new UsageError("--issuer is required (or set TREZOR_OIDC_ISSUER).");
   if (!opt.client) throw new UsageError("--client is required (or set TREZOR_OIDC_CLIENT).");
@@ -134,6 +151,9 @@ async function issueToken() {
     await trezor.initialize();
     const { idToken } = await signIdToken(trezor, { config, account, req });
     return idToken;
+  } catch (e) {
+    await cancelOnDevice(trezor);
+    throw e;
   } finally {
     await transport.close();
   }
