@@ -1,0 +1,36 @@
+name: CI
+
+# Checks pull requests: script syntax, a site build with the repository config,
+# and the command-line tool against a software Trezor (no hardware needed).
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      - name: Check scripts
+        run: for f in js/*.js js/pages/*.js scripts/*.mjs cli/*.mjs test/*.mjs; do node --check "$f"; done
+
+      - name: Build site from config
+        env:
+          OIDC_ISSUER: ${{ vars.OIDC_ISSUER }}
+        run: |
+          owner=$(echo "$GITHUB_REPOSITORY_OWNER" | tr '[:upper:]' '[:lower:]')
+          export OIDC_ISSUER="${OIDC_ISSUER:-https://$owner.github.io/${GITHUB_REPOSITORY#*/}}"
+          node scripts/build-site.mjs --out _site
+
+      - name: Command-line tool
+        run: node test/cli.mjs

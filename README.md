@@ -23,6 +23,8 @@ app ──(authorize link)──▶ authorize.html ──WebUSB──▶ Trezor 
 | `authorize.html` | Authorization endpoint: checks the request, shows consent, signs on the Trezor, returns the token |
 | `setup.html` | Registers an account: derives its key on the Trezor and gives you the updated `config/accounts.json` |
 | `rp/` | Demo app that signs in and verifies the token in the browser |
+| `cli/` | `trezor-oidc` command-line tool: signs tokens without a browser, optional AWS STS exchange |
+| `examples/aws/` | AWS IAM federation: identity provider, role, example bucket, AWS CLI profile |
 | `js/` | Dependency-free Trezor protocol v1 client over WebUSB, OIDC helpers, page scripts |
 
 The build generates these files on the site; they are not in the repository:
@@ -66,9 +68,16 @@ is replaced with the issuer, which keeps the demo app working wherever the site 
 ```json
 {
   "demo-rp": { "name": "Demo app", "redirect_uris": ["{{ISSUER}}/rp/"] },
-  "my-app": { "name": "My app", "redirect_uris": ["https://my-app.example/callback"] }
+  "my-app": { "name": "My app", "redirect_uris": ["https://my-app.example/callback"] },
+  "aws": { "name": "AWS", "cli": true }
 }
 ```
+
+| App setting | Meaning |
+|---|---|
+| `name` | Shown on the consent page and on the Trezor ("Sign in to <name>"), at most 48 characters |
+| `redirect_uris` | Exact return addresses for browser sign-in. Optional when `cli` is true |
+| `cli` | `true` lets the command-line tool issue tokens for this app (no browser, no redirect) |
 
 ### What the build checks
 
@@ -77,7 +86,7 @@ The workflow fails, with a message naming the account or app, if:
 - an account was registered for a different site address than the issuer (the address is part of the key);
 - an account's key is not a valid P-256 point, or its `kid` doesn't match the key's thumbprint;
 - two accounts share a username or key;
-- an app ID is malformed, or a return address isn't an absolute `https` URL (`http` is allowed for localhost) or contains a fragment;
+- an app ID is malformed, has no return address and isn't a `cli` app, or a return address isn't an absolute `https` URL (`http` is allowed for localhost) or contains a fragment;
 - an account and app pair would produce tokens over the Trezor's 512-byte limit;
 - the issuer isn't `https`, or the token lifetime is out of range.
 
@@ -101,6 +110,35 @@ get different keys because their paths differ.
 - Tokens are ES256 with a `kid` from `jwks.json`, valid for 5 minutes by default.
 - Claims: `iss`, `sub` (the registered username), `aud`, `iat`, `exp`, `nonce`, and with `profile`, `name` and `preferred_username`.
 - GitHub Pages serves JSON with `Access-Control-Allow-Origin: *`, so browser apps on other origins can fetch discovery and keys.
+
+## Command-line tokens
+
+`cli/trezor-oidc.mjs` signs an ID token on the Trezor without a browser and
+prints it to stdout, for scripts and tools that accept an OIDC token. The app
+must have `"cli": true` in `config/clients.json`.
+
+```sh
+npm install && npm link    # optional: "usb" package for direct USB, trezor-oidc on PATH
+trezor-oidc token --issuer https://owner.github.io/repo --client aws [--account alice] [--profile]
+```
+
+- It reads `idp-config.json` and `clients.json` from the issuer, so it uses
+  exactly the accounts and apps the site publishes.
+- Device access: through Trezor Bridge or Trezor Suite when they run, else
+  directly over USB (Suite closed). `--transport bridge|usb|udp[:port]` forces one;
+  `udp` is the emulator.
+- Confirmation messages and PIN / passphrase prompts go to the terminal
+  (`/dev/tty`), never to stdout. Model One PINs use the scrambled-grid
+  positions, as in the browser.
+- Same checks as the browser: the token is refused if the device's key doesn't
+  match the registered one, and verified before it's printed.
+- The `cli` flag is a convenience, not a security boundary: whoever holds a
+  registered Trezor can sign tokens for any audience. Relying parties must check
+  `aud` and `sub`.
+
+`trezor-oidc aws-credentials --role-arn ARN` also exchanges the token with AWS
+STS and prints credentials for an AWS CLI `credential_process`. See
+[examples/aws](examples/aws/README.md) for the identity provider, role and profile setup.
 
 ## Supported devices and browsers
 
@@ -146,6 +184,9 @@ The device code is tested against the Trezor One emulator (built from
 trezor-firmware with `EMULATOR=1 DEBUG_LINK=1`), which DebugLink confirms automatically.
 
 ```sh
+# 0. command-line tool, no hardware: software Trezor behind a fake Bridge, fake AWS STS
+node test/cli.mjs
+
 # 1. protocol, OIDC logic and key derivation (22 checks). EMIT_CONFIG writes the
 #    emulator-derived accounts as a config folder for the build.
 ISSUER=http://localhost:8080/trezor-oidc EMIT_CONFIG=/tmp/testcfg node test/e2e.mjs
