@@ -137,8 +137,10 @@ if (!clientsIn.value || typeof clientsIn.value !== "object" || Array.isArray(cli
     if (!/^[A-Za-z0-9._:-]{1,64}$/.test(cid)) fail(`${where}: the app ID may only contain letters, digits and . _ : - (at most 64).`);
     if (!c || typeof c !== "object") { fail(`${where} is not an object.`); continue; }
     if (c.name !== undefined && (typeof c.name !== "string" || c.name.length > 48)) fail(`${where}: "name" must be text of at most 48 characters.`);
+    if (c.cli !== undefined && typeof c.cli !== "boolean") fail(`${where}: "cli" must be true or false.`);
+    const cli = c.cli === true;
     const uris = Array.isArray(c.redirect_uris) ? c.redirect_uris : [];
-    if (!uris.length) fail(`${where}: "redirect_uris" must list at least one return address.`);
+    if (!uris.length && !cli) fail(`${where}: "redirect_uris" must list at least one return address, or set "cli": true for an app that only gets tokens from the command-line tool.`);
     const resolved = uris.map((u) => String(u).replaceAll("{{ISSUER}}", issuer ?? ""));
     for (const u of issuer ? resolved : []) {
       try {
@@ -150,7 +152,7 @@ if (!clientsIn.value || typeof clientsIn.value !== "object" || Array.isArray(cli
         fail(`${where}: return address "${u}" is not an absolute URL.`);
       }
     }
-    if (errors.length === before) clients[cid] = { ...(c.name ? { name: c.name } : {}), redirect_uris: resolved };
+    if (errors.length === before) clients[cid] = { ...(c.name ? { name: c.name } : {}), redirect_uris: resolved, ...(cli ? { cli: true } : {}) };
   }
   if (!Object.keys(clients).length && !errors.length) warn("No apps are registered, so nobody can sign in. Add one to config/clients.json.");
 }
@@ -224,9 +226,9 @@ const summary = [
   ...accounts.map((a) => `| ${a.sub}${a.name ? ` (${a.name})` : ""} | \`${a.kid}\` | \`ssh://${identityLabel(a.identity)}\` #${a.identity.index} |`),
   ...(accounts.length ? [] : [`| none yet: open ${issuer}/setup.html | | |`]),
   ``,
-  `| App ID | Name | Return addresses |`,
-  `|---|---|---|`,
-  ...Object.entries(clients).map(([id, c]) => `| \`${id}\` | ${c.name ?? ""} | ${c.redirect_uris.join("<br>")} |`),
+  `| App ID | Name | Return addresses | Command line |`,
+  `|---|---|---|---|`,
+  ...Object.entries(clients).map(([id, c]) => `| \`${id}\` | ${c.name ?? ""} | ${c.redirect_uris.join("<br>")} | ${c.cli ? "yes" : ""} |`),
   ``,
   `Sources: ${accountsIn.source}, ${clientsIn.source}. Token lifetime ${tokenTtl}s.`,
 ].join("\n");

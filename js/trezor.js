@@ -1,5 +1,7 @@
 // Trezor protocol v1 client (Model One, Model T, Safe 3, Safe 5).
-// Transport-agnostic: anything with async write(Uint8Array[64]) / read() -> Uint8Array[64].
+// Transport-agnostic: anything with async write(Uint8Array[64]) / read() -> Uint8Array[64],
+// or, for transports that carry whole messages (Trezor Bridge), async
+// sendMessage(type, data) / receiveMessage() -> { type, data }.
 // Safe 7 (and other THP-only firmware) is not supported by this POC.
 
 import { MessageType, MessageName, encode, decode } from "./proto.js";
@@ -33,6 +35,7 @@ export class TrezorClient {
   async send(name, obj) {
     const data = encode(name, obj);
     const type = MessageType[name];
+    if (this.t.sendMessage) return this.t.sendMessage(type, data);
     const msg = new Uint8Array(8 + data.length);
     msg[0] = 0x23; msg[1] = 0x23; // "##"
     msg[2] = type >> 8; msg[3] = type & 0xff;
@@ -47,6 +50,10 @@ export class TrezorClient {
   }
 
   async receive() {
+    if (this.t.receiveMessage) {
+      const { type, data } = await this.t.receiveMessage();
+      return this.decodeMessage(type, data);
+    }
     let pkt;
     // skip any stray continuation packets until a message header appears
     for (let tries = 0; ; tries++) {
@@ -67,6 +74,10 @@ export class TrezorClient {
       data.set(pkt.subarray(1, 1 + n), have);
       have += n;
     }
+    return this.decodeMessage(type, data);
+  }
+
+  decodeMessage(type, data) {
     const name = MessageName[type];
     if (!name) throw new Error(`unexpected message type ${type}`);
     return { name, message: decode(name, data) };
